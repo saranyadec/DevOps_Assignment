@@ -1,23 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sample-node-app
-  labels:
-    app: sample-node-app
+  name: nodejs-app
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: sample-node-app
+      app: nodejs-app
   template:
     metadata:
       labels:
-        app: sample-node-app
+        app: nodejs-app
     spec:
       containers:
-      - name: app
-        image: REPLACE_WITH_IMAGE
-        imagePullPolicy: Always
+      - name: nodejs-app
+        image: nodejs-cicd:latest
         ports:
         - containerPort: 3000
         readinessProbe:
@@ -25,10 +22,5 @@ spec:
             path: /
             port: 3000
           initialDelaySeconds: 5
-          periodSeconds: 5
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 3000
-          initialDelaySeconds: 15
-          periodSeconds: 20
+          periodSeconds: 10
+
