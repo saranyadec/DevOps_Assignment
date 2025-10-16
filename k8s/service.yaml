@@ -3,9 +3,10 @@ kind: Service
 metadata:
   name: node-app-service
 spec:
+  type: ClusterIP         # internal cluster service
   selector:
     app: node-app
   ports:
-    - port: 80
-      targetPort: 3000
-  type: NodePort
+    - protocol: TCP
+      port: 3000          # service port inside cluster
+      targetPort: 3000    # container port
