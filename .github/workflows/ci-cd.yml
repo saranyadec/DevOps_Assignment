@@ -1,4 +1,4 @@
-name: Node.js CI/CD Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
@@ -24,24 +24,29 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Setup Minikube
-        uses: medyagh/setup-minikube@master
+      - name: Build Docker Image
+        run: docker build -t node-cicd-kind:latest .
+  
+      - name: Create kind Cluster
+        uses: helm/kind-action@v1.10.0
         with:
-          driver: docker
+          cluster_name: node-cicd
+  
+      - name: Load Docker image into kind
+        run: kind load docker-image node-cicd-kind:latest --name node-cicd
 
-      - name: Build Docker image inside Minikube
-        run: |
-          eval $(minikube docker-env)
-          docker build -t nodejs-cicd:latest .
 
       - name: Deploy to Kubernetes
         run: |
-          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/deployment.yaml || (echo "Deployment failed, rolling back..." && kubectl rollout undo deployment/node-app)
           kubectl apply -f k8s/service.yaml
+          kubectl rollout status deployment/node-app
+  
+      - name: Verify Service
+        run: |
+          kubectl get pods
+          kubectl get svc
 
-      - name: Verify rollout
-        run: kubectl rollout status deployment/nodejs-app --timeout=60s
-
-      - name: Rollback if failed
-        if: failure()
-        run: bash k8s/rollback.sh
+      # - name: Rollback if failed
+      #   if: failure()
+      #   run: bash k8s/rollback.sh
