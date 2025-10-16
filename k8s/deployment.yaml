@@ -17,5 +17,6 @@ spec:
       containers:
         - name: node-app
           image: node-cicd-kind:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 3000
