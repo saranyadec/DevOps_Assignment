@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "feature/task2/saranya" ]
   pull_request:
-  
+
 jobs:
   build-test-deploy:
     runs-on: ubuntu-latest
@@ -19,34 +19,35 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Run tests
         run: npm test
 
       - name: Build Docker Image
         run: docker build -t node-cicd-kind:latest .
-  
+
       - name: Create kind Cluster
         uses: helm/kind-action@v1.10.0
         with:
           cluster_name: node-cicd
-  
+
       - name: Load Docker image into kind
         run: kind load docker-image node-cicd-kind:latest --name node-cicd
 
-
       - name: Deploy to Kubernetes
         run: |
-          kubectl apply -f k8s/deployment.yaml || (echo "Deployment failed, rolling back..." && kubectl rollout undo deployment/node-app)
+          echo "Deploying Node.js app to kind cluster..."
+          kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
-          kubectl rollout status deployment/node-app
-  
+          echo "Waiting for deployment to complete..."
+          kubectl rollout status deployment/node-app || (
+            echo "Deployment failed, rolling back..." &&
+            kubectl rollout undo deployment/node-app
+          )
+
       - name: Verify Service
         run: |
-          kubectl get pods
-          kubectl get svc
-
-      # - name: Rollback if failed
-      #   if: failure()
-      #   run: bash k8s/rollback.sh
+          echo "Checking pods and services..."
+          kubectl get pods -o wide
+          kubectl get svc -o wide
