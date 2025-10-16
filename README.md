@@ -42,6 +42,15 @@ Build and Deploy Locally
     kubectl apply -f k8s/deployment.yaml
     kubectl apply -f k8s/service.yaml
 
+# Checking for pod logs
+
+    kubectl logs node-app-654b675659-ntzhg
+
+    > node-cicd-kind@1.0.0 start
+    > node src/app.js
+
+    App running at http://localhost:3000
+
 # Access app via port-forward:
 
     kubectl port-forward svc/node-app-service 30080:3000
