@@ -2,26 +2,11 @@
 
 This repository contains: a sample Python app, Dockerfile, Kubernetes manifests (Deployment, Service, Ingress, HPA) and monitoring integration with Prometheus & Grafana . 
 
-
-The Project structure is as follows,
-
-/
-├─ python_app/
-│ ├─ app.py
-│ ├─ requirements.txt
-│ └─ Dockerfile
-├─ k8s/
-│ ├─ deployment.yaml
-│ ├─ service.yaml
-│ ├─ ingress.yaml
-│ ├─ hpa.yaml
-Readme.md
-
 ## Prerequisites
 - A Kubernetes cluster (minikube)
 - kubectl configured to talk to the cluster
 - (Optional) Helm 3 installed
-- An ingress controller (e.g. nginx-ingress) installed if you want Ingress to work
+- An ingress controller 
 - Docker (to build images)
 
 ## Steps
